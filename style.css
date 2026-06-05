@@ -127,6 +127,24 @@ input[type="text"]:focus, input[type="number"]:focus {
 .result-card.blue .amount { color: var(--blue); }
 .result-card.red  .amount { color: var(--red); }
 
+/* Limit badge */
+.limit-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.limit-badge.maxed {
+  background: rgba(212,43,43,0.12);
+  color: var(--red);
+}
+.limit-badge.ok {
+  background: rgba(46,125,50,0.1);
+  color: #2E7D32;
+}
+
 .total-card {
   background: var(--white);
   border: 1px solid var(--border);

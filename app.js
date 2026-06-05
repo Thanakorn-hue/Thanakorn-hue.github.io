@@ -13,8 +13,19 @@ function setMode(govMode) {
     : 'กรอกราคาสินค้า → คำนวณส่วนที่รัฐและคุณออก';
   document.getElementById('input-amount').value = '';
   document.getElementById('results').style.display = 'none';
+  // reset badge และ label
+  const govCard = document.querySelector('.result-card.blue');
+  if (govCard) {
+    const badge = govCard.querySelector('.limit-badge');
+    if (badge) badge.remove();
+    govCard.querySelector('.clabel').textContent = 'รัฐบาลออกให้ 60%';
+  }
+  const selfCard = document.querySelector('.result-card.red');
+  if (selfCard) selfCard.querySelector('.clabel').textContent = 'คุณออกเอง 40%';
   currentResult = null;
 }
+
+const GOV_LIMIT = 200; // บาท สูงสุดที่รัฐช่วยต่อรายการ
 
 function calculate() {
   const raw = parseFloat(document.getElementById('input-amount').value);
@@ -25,18 +36,53 @@ function calculate() {
   }
   let total, gov, self;
   if (isGovMode) {
+    // โหมดกรอกยอดรัฐช่วย: ไม่มีลิมิต คำนวณตรงๆ
     gov = raw;
     total = raw / 0.6;
-    self = total * 0.4;
+    self = total - gov;
   } else {
+    // โหมดกรอกราคาสินค้า: รัฐออก 60% แต่ไม่เกิน GOV_LIMIT
     total = raw;
-    gov = raw * 0.6;
-    self = raw * 0.4;
+    gov = Math.min(raw * 0.6, GOV_LIMIT);
+    self = total - gov;
   }
+
+  const govPct = (gov / total * 100).toFixed(1);
+  const selfPct = (self / total * 100).toFixed(1);
+
   currentResult = { total, gov, self };
   document.getElementById('res-gov').textContent = gov.toFixed(2) + ' ฿';
   document.getElementById('res-self').textContent = self.toFixed(2) + ' ฿';
   document.getElementById('res-total').textContent = total.toFixed(2) + ' บาท';
+
+  // แสดง badge ลิมิต (เฉพาะโหมดราคาสินค้า)
+  const govCard = document.getElementById('res-gov').closest('.result-card');
+  let badge = govCard.querySelector('.limit-badge');
+  if (!isGovMode) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'limit-badge';
+      govCard.insertBefore(badge, govCard.querySelector('.amount'));
+    }
+    const isMaxed = gov >= GOV_LIMIT;
+    if (isMaxed) {
+      badge.innerHTML = '⚠️ ถึงลิมิตแล้ว (200 ฿)';
+      badge.className = 'limit-badge maxed';
+    } else {
+      const remaining = GOV_LIMIT - gov;
+      badge.innerHTML = `✅ เหลือสิทธิ์ ${remaining.toFixed(2)} ฿`;
+      badge.className = 'limit-badge ok';
+    }
+  } else {
+    if (badge) badge.remove();
+  }
+
+  // อัปเดต label เปอร์เซ็นต์
+  const govLabel = govCard.querySelector('.clabel');
+  const selfLabel = document.getElementById('res-self').closest('.result-card').querySelector('.clabel');
+  govLabel.textContent = `รัฐบาลออกให้ ${govPct}%`;
+  selfLabel.textContent = `คุณออกเอง ${selfPct}%`;
+
   document.getElementById('results').style.display = 'block';
 }
 
@@ -92,7 +138,7 @@ function renderHistory() {
       <div class="h-header">
         <div class="h-name">${escHtml(p.name)}</div>
         <div class="h-total">${p.totalAmount.toFixed(2)} ฿</div>
-      </div>s
+      </div>
       <div class="tags">
         <span class="tag blue">รัฐ: ${p.govPays.toFixed(2)} ฿</span>
         <span class="tag red">คุณ: ${p.selfPays.toFixed(2)} ฿</span>
