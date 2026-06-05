@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ไทยช่วยไทย</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Page: Calculator -->
+<div class="page active" id="page-calc">
+  <div class="scroll-area">
+    <div class="header-banner">
+      <img class="flag" src="images/icon.png" alt="TH">
+      <div>
+        <h1>ไทยช่วยไทย</h1>
+        <p>คำนวณการใช้สิทธิ์</p>
+      </div>
+    </div>
+
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="btn-price" onclick="setMode(false)">🛍️ ราคาสินค้า</button>
+      <button class="toggle-btn" id="btn-gov" onclick="setMode(true)">🏛️ เงินรัฐช่วย</button>
+    </div>
+
+    <div class="info-card">
+      <span class="icon">💡</span>
+      <span id="info-text">กรอกราคาสินค้า → คำนวณส่วนที่รัฐและคุณออก</span>
+    </div>
+
+    <div class="input-group">
+      <label>ชื่อรายการ (ไม่บังคับ)</label>
+      <input type="text" id="input-name" placeholder="เช่น ซื้อของชำ, ค่าอาหาร...">
+    </div>
+    <div class="input-group">
+      <label id="amount-label">ราคาสินค้ารวม (บาท)</label>
+      <input type="number" id="input-amount" placeholder="กรอกราคาสินค้า เช่น 500" oninput="calculate()" step="0.01" min="0">
+    </div>
+
+    <div id="results" style="display:none">
+      <div class="result-row">
+        <div class="result-card blue">
+          <div class="icon">🏛️</div>
+          <div class="clabel">รัฐบาลออกให้ 60%</div>
+          <div class="amount" id="res-gov">0.00 ฿</div>
+        </div>
+        <div class="result-card red">
+          <div class="icon">👤</div>
+          <div class="clabel">คุณออกเอง 40%</div>
+          <div class="amount" id="res-self">0.00 ฿</div>
+        </div>
+      </div>
+      <div class="total-card">
+        <span>💰 ยอดรวมที่คุณใช้สิทธิ์ได้</span>
+        <span class="total-amount" id="res-total">0.00 บาท</span>
+      </div>
+      <button class="btn-primary" onclick="save()">💾 บันทึกรายการ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Page: History -->
+<div class="page" id="page-history">
+  <div class="page-bar">📋 ประวัติการใช้สิทธิ์</div>
+  <div id="history-container"></div>
+</div>
+
+<!-- Page: Summary -->
+<div class="page" id="page-summary">
+  <div class="scroll-area">
+    <div class="summary-banner">
+      <div class="s-label">🇹🇭 ยอดใช้จ่ายทั้งหมด</div>
+      <div class="s-total" id="sum-total">0.00 บาท</div>
+      <div class="s-count" id="sum-count">0 รายการ</div>
+    </div>
+    <div class="summary-cards">
+      <div class="summary-card blue">
+        <div class="s-icon">🏛️</div>
+        <div class="s-clabel">รัฐบาลออกให้ (60%)</div>
+        <div class="s-amount" id="sum-gov">0.00 ฿</div>
+      </div>
+      <div class="summary-card red">
+        <div class="s-icon">👤</div>
+        <div class="s-clabel">คุณออกเอง (40%)</div>
+        <div class="s-amount" id="sum-self">0.00 ฿</div>
+      </div>
+    </div>
+    <div class="progress-section" id="sum-progress" style="display:none">
+      <h3>สัดส่วนการใช้จ่าย</h3>
+      <div class="progress-row">
+        <div class="progress-header">
+          <span>รัฐบาลออกให้</span>
+          <span class="progress-pct blue" id="pct-gov">0%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar blue" id="bar-gov" style="width:0%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-header">
+          <span>คุณออกเอง</span>
+          <span class="progress-pct red" id="pct-self">0%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar red" id="bar-self" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-calc" onclick="switchPage('calc')">
+    <div class="nav-icon">🧮</div>
+    <span>คำนวณ</span>
+  </button>
+  <button class="nav-btn" id="nav-history" onclick="switchPage('history')">
+    <div class="nav-icon">📋</div>
+    <span>ประวัติ</span>
+  </button>
+  <button class="nav-btn" id="nav-summary" onclick="switchPage('summary')">
+    <div class="nav-icon">📊</div>
+    <span>สรุป</span>
+  </button>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
